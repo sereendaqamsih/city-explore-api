@@ -18,7 +18,7 @@ server.get('/',(req,res)=>{
 server.get('/test',(req,res)=>{
     res.status(200).send('my server is working')
 });
-//http://localhost:3001/weather?cityName=Paris
+//http://localhost:3030/weather?cityName=Paris
 server.get('/weather', (req, res) => {
 //   let lon = req.query.lon;
 //   let lat = req.query.lat;
@@ -32,6 +32,7 @@ let selectedCity = weather.find (city =>{
                 // else { res.status(500).send('Error page not found'); }
 
             });
+            //console.log(selectedCity);
       let weatherUpdate = selectedCity.data.map(item => {
             return new ForCast(item.weather.description,item.valid_date);
             })
