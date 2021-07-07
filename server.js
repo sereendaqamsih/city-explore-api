@@ -10,6 +10,8 @@ require('dotenv').config(); // npm i dotenv
 const PORT = process.env.PORT;
 console.log(PORT);
 const axios = require('axios')
+const getMoviesHandle = require('./modules/movies');
+const getWeatherHandle = require('./modules/weather');
 
 
 
@@ -46,68 +48,10 @@ server.get('/test',(req,res)=>{
 
 server.get('/weather', getWeatherHandle);
 
-function getWeatherHandle (req, res) {
-    let selectedData=[];
-    const sQuery = req.query.cityName;
 
-    let url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${sQuery}&key=${process.env.WEATHER_API_KEY}`;
-
-    axios.get(url).then( weather1 => {
-console.log(weather1.data.data);
-             selectedData =weather1.data.data.map(item => {
-                return new ForCast(item);
-            })
-            res.send(selectedData);
-// console.log(selectedData);
-        })
-        .catch(error => {
-            res.status(500).send(error);
-        })
-
-//   console.log('after axios')
-
-}
-
-        class ForCast {
-            constructor(item) {
-            this.valid_date = item.valid_date;
-            this.description = item.weather.description;
-            }
-            
-          }
 //http://localhost:3030/movies?cityName=Paris
 
- server.get('/movies', getMoviesHandle);
- function getMoviesHandle(req, res) {
-
-     let moviesSelected=[];
-        let sQuery = req.query.cityName
-    let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${sQuery}`
-    axios.get(url).then(movies =>{
-        moviesSelected= movies.data.results.map(item => {
-            return new Movie(item);
-        })
-        res.send(moviesSelected);
-    })
-        .catch(error => {
-            res.status(500).send(error)
-        })
-    
-
- }
-
-
-class Movie {
-    constructor(item){
-        this.title = item.original_title;
-        this.overview = item.overview;
-        this.average_votes = item.vote_average;
-        this.total_votes = item.vote_count;
-        this.image_url = `https://image.tmdb.org/t/p/w500/${item.poster_path}`;
-        this.popularity = item.popularity;
-        this.released_on = item.release_date;
-    }
-}
+server.get('/movies', getMoviesHandle);
 
 
 
