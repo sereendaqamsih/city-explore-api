@@ -1,29 +1,36 @@
 'use strict'
 const axios = require('axios')
+let inMemory = {};
 
 
 
- function getMoviesHandle(req, res) {
+function getMoviesHandle(req, res) {
 
-     let moviesSelected=[];
-        let sQuery = req.query.cityName
+    let moviesSelected = [];
+    let sQuery = req.query.cityName
     let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${sQuery}`
-    axios.get(url).then(movies =>{
-        moviesSelected= movies.data.results.map(item => {
-            return new Movie(item);
+    if (inMemory[sQuery] !== undefined) {
+        console.log('we got the data from our server');
+        res.send(inMemory[sQuery]);
+    } else {
+        axios.get(url).then(movies => {
+            moviesSelected = movies.data.results.map(item => {
+                return new Movie(item);
+            })
+            console.log('send request to movies API')
+            inMemory[sQuery] = moviesSelected;
+            res.send(moviesSelected);
         })
-        res.send(moviesSelected);
-    })
-        .catch(error => {
-            res.status(500).send(error)
-        })
-    
+            .catch(error => {
+                res.status(500).send(error)
+            })
+    }
 
- }
+}
 
 
 class Movie {
-    constructor(item){
+    constructor(item) {
         this.title = item.original_title;
         this.overview = item.overview;
         this.average_votes = item.vote_average;
